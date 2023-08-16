@@ -1,4 +1,4 @@
-package me.wxc.composestudy.main
+package me.wxc.feature.feed
 
 import kotlinx.serialization.Serializable
 

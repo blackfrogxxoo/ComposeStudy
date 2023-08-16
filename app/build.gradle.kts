@@ -2,9 +2,10 @@ import me.wxc.deps.*
 
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
-    kotlin("plugin.serialization").version("1.8.20")
+    kotlin("android")
+    kotlin("kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -64,42 +65,60 @@ dependencies {
         )
     )
 
-    implementation(project(":mvi-core"))
-    implementation(project(":pullrefresh"))
+    autoImplProjects()
+    addHilt()
 
     implementation(deps.androidx.ktx)
+    implementation(deps.androidx.appCompat)
 
     implementation(deps.lifecycle.viewModelKtx)
     implementation(deps.lifecycle.runtimeKtx)
     implementation(deps.lifecycle.compose)
+    implementation(deps.lifecycle.runtimeCompose)
 
     implementation(deps.coroutines.core)
     implementation(deps.coroutines.android)
-
-    implementation(deps.koin.core)
-    implementation(deps.koin.android)
 
     implementation(deps.room.core)
     implementation(deps.room.ktx)
     ksp(deps.room.ksp)
 
-    implementation(deps.ktor.core)
-    implementation(deps.ktor.cio)
-    implementation(deps.ktor.negotiation)
-    implementation(deps.ktor.json)
-
-    implementation(deps.compose.activityCompose)
-    implementation(platform(deps.compose.bom))
-    implementation(deps.compose.ui)
-    implementation(deps.compose.foundation)
-    implementation(deps.compose.uiGraphics)
-    implementation(deps.compose.uiToolingPreview)
-    implementation(deps.compose.material3)
-    debugImplementation(deps.compose.uiTooling)
-    debugImplementation(deps.compose.uiTestManifest)
-
     implementation(deps.coil.core)
 
     addUnitTest()
     addAndroidTest()
+}
+
+fun Project.autoImplProjects() {
+    val dir = rootDir
+    dependencies {
+        listFiles(dir) {
+            implementation(project(it))
+        }
+    }
+}
+
+
+fun listFiles(dir: File, block: (String) -> Unit) {
+    fun File.isParentModule() = isDirectory && listFiles().any { it.name == "settings.gradle" }
+    fun File.isModule() = isDirectory && listFiles().any { it.name == "build.gradle.kts" }
+    println("${dir.absolutePath} list files --->")
+    dir.listFiles().filter {
+        it.isModule()
+    }.forEach {
+        val name = if (it.parentFile.isParentModule()) {
+            ":${it.parentFile.name}:${it.name}"
+        } else {
+            ":${it.name}"
+        }
+        if (name != ":app") {
+            println(it.absolutePath + ", " + name)
+            block(name)
+        }
+    }
+    dir.listFiles().filter {
+        it.isParentModule()
+    }.forEach {
+        listFiles(it, block)
+    }
 }

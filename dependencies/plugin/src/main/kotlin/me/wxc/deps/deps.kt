@@ -48,6 +48,7 @@ object deps {
         const val viewModelKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:$version" // viewModelScope
         const val runtimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:$version" // lifecycleScope
         const val compose = "androidx.lifecycle:lifecycle-viewmodel-compose:$version"
+        const val runtimeCompose = "androidx.lifecycle:lifecycle-runtime-compose:$version"
     }
 
     object coroutines {
@@ -85,6 +86,15 @@ object deps {
         private const val version = "2.4.0"
 
         const val core = "io.coil-kt:coil-compose:$version"
+    }
+
+    object hilt {
+        private const val version = "2.44"
+        private const val androidXVersion = "1.0.0"
+        const val core = "com.google.dagger:hilt-core:$version"
+        const val android = "com.google.dagger:hilt-android:$version"
+        const val compiler = "com.google.dagger:hilt-android-compiler:$version"
+        const val navigationCompose = "androidx.hilt:hilt-navigation-compose:$androidXVersion"
     }
 
     object test {
@@ -136,4 +146,12 @@ fun DependencyHandler.initialMvi() {
     add(configName, deps.lifecycle.runtimeKtx)
     add(configName, deps.coroutines.core)
     add(configName, deps.coroutines.android)
+}
+
+fun DependencyHandler.addHilt() {
+    val configName = "implementation"
+    add(configName, deps.hilt.core)
+    add(configName, deps.hilt.android)
+    add(configName, deps.hilt.navigationCompose)
+    add("kapt", deps.hilt.compiler)
 }

@@ -2,11 +2,13 @@ import me.wxc.deps.*
 
 plugins {
     id("com.android.library")
-    id("org.jetbrains.kotlin.android")
+    kotlin("android")
+    kotlin("kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
-    namespace = "me.wxc.pullrefresh"
+    namespace = "me.wxc.framework.http"
     compileSdk = appConfig.compileSdkVersion
 
     defaultConfig {
@@ -30,17 +32,12 @@ android {
     kotlinOptions {
         jvmTarget = appConfig.javaVersion.toString()
     }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = deps.compose.version
-    }
 }
 
 dependencies {
-    compileOnly(platform(deps.compose.bom))
-    compileOnly(deps.compose.ui)
-    compileOnly(deps.compose.material3)
-    compileOnly(deps.compose.foundation)
+    addHilt()
+    api(deps.ktor.core)
+    api(deps.ktor.cio)
+    api(deps.ktor.negotiation)
+    api(deps.ktor.json)
 }

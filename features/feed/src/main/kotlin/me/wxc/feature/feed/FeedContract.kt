@@ -1,4 +1,4 @@
-package me.wxc.composestudy.main
+package me.wxc.feature.feed
 
 import android.util.Log
 import androidx.compose.runtime.Immutable
@@ -8,7 +8,7 @@ import me.wxc.mvicore.MviViewState
 
 
 @Immutable
-data class MainItem(
+data class FeedItem(
     val banner: List<Story>? = null,
     val story: Story? = null,
     val date: String? = null
@@ -21,31 +21,32 @@ data class MainItem(
 
 
 @Immutable
-sealed interface MainIntent : MviIntent {
-    object Initial : MainIntent
-    object Refresh : MainIntent
-    data class LoadMore(val date: String) : MainIntent
+sealed interface FeedIntent : MviIntent {
+    object Initial : FeedIntent
+    object Refresh : FeedIntent
+    data class LoadMore(val date: String) : FeedIntent
+    data class ClickItem(val item: FeedItem) : FeedIntent
 }
 
 @Immutable
-data class MainState(
-    val items: List<MainItem> = emptyList(),
+data class FeedState(
+    val items: List<FeedItem> = emptyList(),
     val error: Throwable? = null,
     val currentDate: String = "",
     val refreshing: Boolean = false,
     val loading: Boolean = false
 ) : MviViewState {
     companion object {
-        fun initial() = MainState()
+        fun initial() = FeedState()
     }
 }
 
 sealed interface PartialStateChange {
-    fun reduce(state: MainState): MainState
+    fun reduce(state: FeedState): FeedState
 
     sealed interface Refresh : PartialStateChange {
-        override fun reduce(state: MainState): MainState {
-            Log.i("fuck", "reduce refreshing: ${state.refreshing}")
+        override fun reduce(state: FeedState): FeedState {
+            Log.i("wxc", "reduce refreshing: ${state.refreshing}")
             return when (this) {
                 Loading -> state.copy(refreshing = true)
                 is Success -> state.copy(
@@ -64,8 +65,8 @@ sealed interface PartialStateChange {
     }
 
     sealed interface LoadMore : PartialStateChange {
-        override fun reduce(state: MainState): MainState {
-            Log.i("fuck", "reduce loading: ${state.loading}")
+        override fun reduce(state: FeedState): FeedState {
+            Log.i("wxc", "reduce loading: ${state.loading}")
             return when (this) {
                 Loading -> state.copy(loading = true)
                 is Success -> state.copy(
@@ -84,16 +85,16 @@ sealed interface PartialStateChange {
     }
 }
 
-sealed interface MainEffect : MviSingleEvent {
-
+sealed interface FeedEffect : MviSingleEvent {
+    data class LoadMoreSuccess(val date: String) : FeedEffect
 }
 
-fun NewsEntity.map2Items(): List<MainItem> {
-    return mutableListOf<MainItem>().apply {
+fun NewsEntity.map2Items(): List<FeedItem> {
+    return mutableListOf<FeedItem>().apply {
         top_stories?.let {
-            add(MainItem(banner = it))
+            add(FeedItem(banner = it))
         }
-        add(MainItem(date = date))
-        addAll(stories.map { MainItem(story = it) })
+        add(FeedItem(date = date))
+        addAll(stories.map { FeedItem(story = it) })
     }
 }

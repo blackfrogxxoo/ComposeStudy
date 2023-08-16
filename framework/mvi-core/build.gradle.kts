@@ -2,11 +2,11 @@ import me.wxc.deps.*
 
 plugins {
     id("com.android.library")
-    id("org.jetbrains.kotlin.android")
+    kotlin("android")
 }
 
 android {
-    namespace = "me.wxc.mvicore"
+    namespace = "me.wxc.framework.mvicore"
     compileSdk = appConfig.compileSdkVersion
 
     defaultConfig {

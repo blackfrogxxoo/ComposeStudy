@@ -26,8 +26,13 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/dependencies" />
             <option value="$PROJECT_DIR$/dependencies/plugin" />
-            <option value="$PROJECT_DIR$/mvi-core" />
-            <option value="$PROJECT_DIR$/pullrefresh" />
+            <option value="$PROJECT_DIR$/features" />
+            <option value="$PROJECT_DIR$/features/feed" />
+            <option value="$PROJECT_DIR$/framework" />
+            <option value="$PROJECT_DIR$/framework/http" />
+            <option value="$PROJECT_DIR$/framework/mvi-core" />
+            <option value="$PROJECT_DIR$/framework/pullrefresh" />
+            <option value="$PROJECT_DIR$/framework/ui-core" />
           </set>
         </option>
       </GradleProjectSettings>
