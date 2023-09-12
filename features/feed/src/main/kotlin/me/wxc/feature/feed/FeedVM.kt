@@ -17,13 +17,12 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
-import me.wxc.framework.http.ApiClient
 import me.wxc.mvicore.AbstractMviViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class FeedVM @Inject constructor(
-    private val apiClient: ApiClient
+    private val feedApi: FeedApi
 ) : AbstractMviViewModel<FeedIntent, FeedState, FeedEffect>() {
     override val viewState: StateFlow<FeedState>
 
@@ -50,8 +49,7 @@ class FeedVM @Inject constructor(
 
     private fun Flow<FeedIntent>.toInitialStateChange(): Flow<PartialStateChange.Refresh> {
         val changes = flow {
-            val result = apiClient.get<NewsEntity>("/api/4/news/latest", NewsEntity::class)
-            emit(result)
+            emit(feedApi.latest())
         }.map { it ->
             it.fold(
                 onSuccess = {
@@ -69,7 +67,7 @@ class FeedVM @Inject constructor(
 
     private fun Flow<FeedIntent.LoadMore>.toLoadMoreStateChange(): Flow<PartialStateChange.LoadMore> {
         val changes = map { it.date }.map {
-            apiClient.get<NewsEntity>("/api/4/news/before/$it", NewsEntity::class)
+            feedApi.before(it)
         }.map { it ->
             it.fold(
                 onSuccess = {
