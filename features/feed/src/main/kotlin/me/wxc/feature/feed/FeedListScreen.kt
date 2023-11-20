@@ -86,13 +86,13 @@ fun FeedListScreen(
     ) {
 
         when {
-            state.refreshing -> Loading()
-            state.error != null -> LoadError(intentChannel)
             state.items.isNotEmpty() -> StoryList(state, onItemClick) {
                 intentChannel.trySend(
                     FeedIntent.LoadMore(state.items.mapNotNull { it.date }.last())
                 )
             }
+            state.refreshing -> Loading()
+            state.error != null -> LoadError(intentChannel)
         }
 
         PullRefreshIndicator(
